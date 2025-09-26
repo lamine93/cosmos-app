@@ -33,6 +33,7 @@ jobs:
           TAG=${{ github.sha }}
           IMAGE="$ACR_LOGIN/$IMAGE_NAME:v1"
           docker buildx build --platform linux/amd64 -t "$IMAGE" src/. --load
+          echo "build Done"
           docker push "$IMAGE"
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
 
