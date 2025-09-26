@@ -1,0 +1,42 @@
+name: build-push-update
+on:
+  push:
+    branches: [ "main" ]
+    paths: [ "src/**", ".github/workflows/**" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      RG:         ${{ vars.AZ_RG }}
+      ACA:        ${{ vars.AZ_ACA }}
+      ACR:        ${{ vars.AZ_ACR }}               # ex: acrabc123
+      ACR_LOGIN:  ${{ vars.AZ_ACR_LOGIN }}         # ex: acrabc123.azurecr.io
+      IMAGE_NAME: ${{ vars.AZ_IMAGE }}             # ex: aca-cosmos
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Enable buildx
+        run: docker buildx create --use
+
+      - name: ACR login (token)
+        run: |
+          TOKEN=$(az acr login -n "$ACR" --expose-token --query accessToken -o tsv)
+          echo "$TOKEN" | docker login "$ACR_LOGIN" -u 00000000-0000-0000-0000-000000000000 --password-stdin
+
+      - name: Build & push
+        run: |
+          TAG=${{ github.sha }}
+          IMAGE="$ACR_LOGIN/$IMAGE_NAME:$TAG"
+          docker buildx build --platform linux/amd64 -t "$IMAGE" . --load
+          docker push "$IMAGE"
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+
+      - name: Update ACA image
+        run: |
+          az extension add --name containerapp --upgrade
+          az containerapp update -g "$RG" -n "$ACA" --image "$IMAGE"
