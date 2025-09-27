@@ -41,4 +41,3 @@ jobs:
         run: |
           az extension add --name containerapp --upgrade
           az containerapp update -g "$RG" -n "$ACA" --image "$IMAGE"
-          
