@@ -39,4 +39,7 @@ jobs:
 
       - name: Update ACA image
         run: |
-          az containerapp update -g "$RG" -n "$ACA" --image "$IMAGE"
+          az containerapp update \
+            --resource-group "$RG" \
+            --name "$ACA" \
+            --image "$IMAGE"
