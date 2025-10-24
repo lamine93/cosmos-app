@@ -1,0 +1,10 @@
+envs/dev/infra/azure_credentials.json
+envs/dev/infra/.terraform
+envs/dev/infra/terraform.tfstate
+envs/dev/infra/terraform.tfstate.backup
+envs/dev/infra/.terraform.lock.hcl
+envs/common/bootstrap-backend/azure_credentials.json
+envs/common/bootstrap-backend/.terraform
+envs/common/bootstrap-backend/terraform.tfstate
+envs/common/bootstrap-backend/terraform.tfstate.backup
+envs/common/bootstrap-backend/.terraform.lock.hcl
